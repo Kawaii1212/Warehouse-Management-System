@@ -1,0 +1,176 @@
+package DAL;
+
+import Model.Branch;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class BranchDAO extends DataBaseContext {
+
+    public List<Branch> getAllBranches() {
+        List<Branch> list = new ArrayList<>();
+        String sql = "SELECT BranchID, BranchName, Address, Phone, IsActive FROM Branches";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Branch b = new Branch();
+                b.setBranchId(rs.getInt("BranchID"));
+                b.setBranchName(rs.getString("BranchName"));
+                b.setAddress(rs.getString("Address"));
+                b.setPhone(rs.getString("Phone"));
+                b.setActive(rs.getBoolean("IsActive"));
+                list.add(b);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean deleteBranch(int id) {
+        String sql = "DELETE FROM Branches WHERE BranchID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateBranch(Branch b) {
+        String sql = "UPDATE Branches SET BranchName=?, Address=?, Phone=?, IsActive=? WHERE BranchID=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, b.getBranchName());
+            ps.setString(2, b.getAddress());
+            ps.setString(3, b.getPhone());
+            ps.setBoolean(4, b.isActive());
+            ps.setInt(5, b.getBranchId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean insertBranch(Branch b) {
+        String sql = "INSERT INTO Branches (BranchName, Address, Phone, IsActive) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, b.getBranchName());
+            ps.setString(2, b.getAddress());
+            ps.setString(3, b.getPhone());
+            ps.setBoolean(4, true); // mặc định chi nhánh mới hoạt động
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    
+    public boolean isBranchNameExists(String branchName) {
+        String sql = "SELECT COUNT(*) FROM Branches WHERE LOWER(BranchName) = LOWER(?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, branchName.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Kiểm tra số điện thoại chi nhánh có tồn tại chưa
+    public boolean isPhoneExists(String phone) {
+        String sql = "SELECT COUNT(*) FROM Branches WHERE Phone = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, phone.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Lấy chi nhánh theo ID
+    public Branch getBranchById(int branchId) {
+        String sql = "SELECT * FROM Branches WHERE BranchID = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, branchId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Branch b = new Branch();
+                    b.setBranchId(rs.getInt("BranchID"));
+                    b.setBranchName(rs.getString("BranchName"));
+                    b.setAddress(rs.getString("Address"));
+                    b.setPhone(rs.getString("Phone"));
+                    b.setActive(rs.getBoolean("IsActive"));
+                    return b;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Đếm tổng số chi nhánh
+    public int countBranches() {
+        String sql = "SELECT COUNT(*) FROM Branches";
+        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+// Lấy danh sách chi nhánh theo trang
+    public List<Branch> getBranchesPaged(int page, int pageSize) {
+        List<Branch> list = new ArrayList<>();
+        int offset = (page - 1) * pageSize;
+
+        // Nếu bạn dùng SQL Server:
+        String sql = """
+        SELECT BranchID, BranchName, Address, Phone, IsActive
+        FROM Branches
+        ORDER BY BranchID
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+    """;
+
+        // Nếu bạn dùng MySQL/MariaDB, thay bằng:
+        // String sql = "SELECT BranchID, BranchName, Address, Phone, IsActive FROM Branches ORDER BY BranchID LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            // SQL Server
+            ps.setInt(1, offset);
+            ps.setInt(2, pageSize);
+
+            // MySQL/MariaDB thì đảo ngược hai dòng trên:
+            // ps.setInt(1, pageSize);
+            // ps.setInt(2, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Branch b = new Branch();
+                    b.setBranchId(rs.getInt("BranchID"));
+                    b.setBranchName(rs.getString("BranchName"));
+                    b.setAddress(rs.getString("Address"));
+                    b.setPhone(rs.getString("Phone"));
+                    b.setActive(rs.getBoolean("IsActive"));
+                    list.add(b);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+}

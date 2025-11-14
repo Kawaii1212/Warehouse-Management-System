@@ -1,0 +1,72 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Đổi mật khẩu</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">       
+        <link href="css/admin/change_password.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+        <%@ include file="../admin/header_admin.jsp" %>
+
+        <div class="container-fluid py-4">
+            <div class="row">
+                <!-- Sidebar -->
+                <%@ include file="../admin/sidebar-store-admin.jsp" %>
+
+                <!-- Main Content -->
+                <div class="col-md-9" style="margin-top: 60px;">
+                    <div class="card shadow-sm" style="width: 1000px;">
+                        <div class="card-body">
+                            <h5 class="mb-4">
+                                <i class="bi bi-lock-fill text-primary me-2"></i> Đổi mật khẩu
+                            </h5>
+
+                            <div class="alert alert-primary d-flex align-items-start" role="alert">
+                                <i class="bi bi-shield-check-fill me-2 fs-4"></i>
+                                <div>
+                                    <strong>Bảo mật tài khoản</strong><br>
+                                    Để đảm bảo an toàn cho tài khoản, vui lòng chọn mật khẩu mạnh và không chia sẻ với bất kỳ ai. 
+                                    Mật khẩu mới phải khác với mật khẩu hiện tại.
+                                </div>
+                            </div>
+
+                            <form action="ChangePassWord" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu hiện tại <span class="text-danger">*</span></label>
+                                    <input type="password" name="currentPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu mới <span class="text-danger">*</span></label>
+                                    <input type="password" name="newPassword" class="form-control" placeholder="Nhập mật khẩu mới" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Xác nhận mật khẩu mới <span class="text-danger">*</span></label>
+                                    <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" required>
+                                </div>
+
+                                <% String msg = (String) request.getAttribute("message");
+                                   String type = (String) request.getAttribute("msgType");
+                                   if (msg != null) { %>
+                                <div class="alert alert-<%= type != null ? type : "info" %>"><%= msg %></div>
+                                <% } %>
+
+                                <div class="text-end">
+                                    <button type="reset" class="btn btn-secondary me-2">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Hủy bỏ
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-key-fill"></i> Đổi mật khẩu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

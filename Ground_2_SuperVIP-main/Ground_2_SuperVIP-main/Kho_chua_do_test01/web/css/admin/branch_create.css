@@ -1,0 +1,126 @@
+.branch-form-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    padding: 20px 25px;
+    width: 100%;
+    max-width: 1100px;
+}
+
+.form-section {
+    background: #f9fafb;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.form-section h5 {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control {
+    border-radius: 6px;
+}
+
+/* --- Nút và hàng nút --- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+/* Nút xám đồng bộ (Quay lại + Đặt lại) */
+.btn-secondary {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563;
+}
+
+/* Nút xanh lá cho hành động chính */
+.btn-success {
+    background-color: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #15803d;
+}
+
+/* Căn chỉnh icon và text đều nhau */
+.btn-secondary i,
+.btn-success i {
+    margin-right: 4px;
+}
+
+.btn-secondary {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.3s;
+    text-decoration: none; /* 💡 NGĂN GẠCH CHÂN */
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-back {
+    background-color: #4b5563;
+    color: white;
+}
+.btn-back:hover {
+    background-color: #374151;
+}
+
+.btn-reset {
+    background-color: #6b7280;
+    color: white;
+}
+.btn-reset:hover {
+    background-color: #52525b;
+}
+
+.btn-create {
+    background-color: #22c55e;
+    color: white;
+}
+.btn-create:hover {
+    background-color: #16a34a;
+}
+
