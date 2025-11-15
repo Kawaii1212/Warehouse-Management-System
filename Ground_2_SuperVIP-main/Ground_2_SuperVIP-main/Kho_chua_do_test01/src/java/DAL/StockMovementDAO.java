@@ -1278,5 +1278,116 @@ public class StockMovementDAO extends DataBaseContext {
             } catch (SQLException ignored) {}
         }
     }
+    
+    
 
+    // StockMovementDAO.java
+public boolean applyInboundToWarehouse(int movementId, int warehouseId) {
+    String selDetails = """
+        SELECT ProductDetailID,
+               CASE WHEN ISNULL(QuantityScanned,0) > 0 THEN QuantityScanned ELSE Quantity END AS Qty
+        FROM StockMovementDetail
+        WHERE MovementID = ?
+    """;
+    String upd = """
+        UPDATE WarehouseProducts
+           SET Quantity = ISNULL(Quantity,0) + ?
+         WHERE WarehouseID = ? AND ProductDetailID = ?
+    """;
+    String ins = """
+        INSERT INTO WarehouseProducts (WarehouseID, ProductDetailID, Quantity)
+        VALUES (?,?,?)
+    """;
+
+    try {
+        connection.setAutoCommit(false);
+
+        try (PreparedStatement psSel = connection.prepareStatement(selDetails);
+             PreparedStatement psUpd = connection.prepareStatement(upd);
+             PreparedStatement psIns = connection.prepareStatement(ins)) {
+
+            psSel.setInt(1, movementId);
+            try (ResultSet rs = psSel.executeQuery()) {
+                while (rs.next()) {
+                    int pdId = rs.getInt("ProductDetailID");
+                    int qty  = rs.getInt("Qty");
+                    if (qty <= 0) continue; // bỏ qua dòng rỗng
+
+                    // UPDATE trước
+                    psUpd.setInt(1, qty);
+                    psUpd.setInt(2, warehouseId);
+                    psUpd.setInt(3, pdId);
+                    int updated = psUpd.executeUpdate();
+
+                    // nếu chưa có thì INSERT
+                    if (updated == 0) {
+                        psIns.setInt(1, warehouseId);
+                        psIns.setInt(2, pdId);
+                        psIns.setInt(3, qty);
+                        psIns.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        connection.commit();
+        connection.setAutoCommit(true);
+        return true;
+    } catch (SQLException e) {
+        try { connection.rollback(); } catch (SQLException ignore) {}
+        try { connection.setAutoCommit(true); } catch (SQLException ignore) {}
+        e.printStackTrace();
+        return false;
+    }
+}
+
+/** (Tuỳ chọn) trừ tồn khi xuất khỏi kho – để bạn dùng cho luồng xuất/điều chuyển */
+public boolean applyOutboundFromWarehouse(int movementId, int warehouseId) {
+    String selDetails = """
+        SELECT ProductDetailID,
+               CASE WHEN ISNULL(QuantityScanned,0) > 0 THEN QuantityScanned ELSE Quantity END AS Qty
+        FROM StockMovementDetail
+        WHERE MovementID = ?
+    """;
+    String upd = """
+        UPDATE WarehouseProducts
+           SET Quantity = CASE WHEN Quantity - ? < 0 THEN 0 ELSE Quantity - ? END
+         WHERE WarehouseID = ? AND ProductDetailID = ?
+    """;
+
+    try {
+        connection.setAutoCommit(false);
+
+        try (PreparedStatement psSel = connection.prepareStatement(selDetails);
+             PreparedStatement psUpd = connection.prepareStatement(upd)) {
+
+            psSel.setInt(1, movementId);
+            try (ResultSet rs = psSel.executeQuery()) {
+                while (rs.next()) {
+                    int pdId = rs.getInt("ProductDetailID");
+                    int qty  = rs.getInt("Qty");
+                    if (qty <= 0) continue;
+
+                    psUpd.setInt(1, qty);
+                    psUpd.setInt(2, qty);
+                    psUpd.setInt(3, warehouseId);
+                    psUpd.setInt(4, pdId);
+                    psUpd.executeUpdate();
+                }
+            }
+        }
+
+        connection.commit();
+        connection.setAutoCommit(true);
+        return true;
+    } catch (SQLException e) {
+        try { connection.rollback(); } catch (SQLException ignore) {}
+        try { connection.setAutoCommit(true); } catch (SQLException ignore) {}
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
+    
 }

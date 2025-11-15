@@ -146,4 +146,23 @@ public class ProductDetailSerialDAO extends DataBaseContext {
         }
         return 0;
     }
+    
+    public int moveSerialsToWarehouseByMovement(int movementId, int warehouseId) {
+    String sql = """
+        UPDATE pdsn
+           SET pdsn.WarehouseID = ?
+        FROM ProductDetailSerialNumber pdsn
+        INNER JOIN StockMovementDetail d ON d.MovementDetailID = pdsn.MovementDetailID
+        WHERE d.MovementID = ?
+    """;
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, warehouseId);
+        ps.setInt(2, movementId);
+        return ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return 0;
+    }
+}
+    
 }
