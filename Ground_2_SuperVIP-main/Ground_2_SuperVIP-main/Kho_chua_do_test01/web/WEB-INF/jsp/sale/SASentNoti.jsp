@@ -25,14 +25,24 @@
 <header class="header">
     <div class="header-main">
         <div class="logo">
-            <div class="logo-icon"><span class="icon-building"></span></div>
+            <div class="logo-icon">
+                <span class="icon-building"></span>
+            </div>
             <span>WM</span>
         </div>
         <nav class="nav-menu">
-           
-            <a href="sale" class="nav-item "><span class="icon-products"></span> Hàng hóa</a>
-            <a href="SAThongBao" class="nav-item active"><span class="icon-transactions"></span> Gửi yêu cầu</a>
-            <a href="sa-customer" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
+            <a href="sale" class="nav-item">
+                <span class="icon-products"></span>
+                Hàng hóa
+            </a>
+            <a href="SAThongBao" class="nav-item">
+                <span class="icon-import"></span>
+                Gửi yêu cầu
+            </a>
+            <a href="sa-customer" class="nav-item">
+                <span class="icon-export"></span>
+                Khách hàng
+            </a>
 
         </nav>
 
@@ -42,13 +52,15 @@
                     <i class="fas fa-user-circle fa-2x"></i>
                 </a>
                 <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="InformationAccount" class="dropdown-item">Thông tin chi tiết</a>
-                    <a href="Login" class="dropdown-item">Đăng xuất</a>
+                    <a href="SAInformation" class="dropdown-item">Thông tin chi tiết</a>
+                    <a href="Logout" class="dropdown-item">Đăng xuất</a>
                 </div>
-            </div>
+            </div>      
         </div>
+
     </div>
 </header>
+
 
 <!-- Toast theo request attribute 'msg' do controller set -->
 <c:if test="${not empty msg}">

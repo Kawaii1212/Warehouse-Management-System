@@ -16,33 +16,44 @@
 </head>
 
 <body>
-    <header class="header">
-        <div class="header-main">
-            <div class="logo">
-                <div class="logo-icon"><span class="icon-building"></span></div>
-                <span>WM</span>
+<header class="header">
+    <div class="header-main">
+        <div class="logo">
+            <div class="logo-icon">
+                <span class="icon-building"></span>
             </div>
-            <nav class="nav-menu">
-
-                <a href="sale" class="nav-item "><span class="icon-products"></span> Hàng hóa</a>
-                <a href="SAThongBao" class="nav-item "><span class="icon-transactions"></span> Gửi yêu cầu</a>
-                <a href="sa-customer" class="nav-item active"><span class="icon-partners"></span> Đối tác</a>
-
-            </nav>
-
-            <div class="header-right">
-                <div class="user-dropdown">
-                    <a href="#" class="user-icon gradient" id="dropdownToggle">
-                        <i class="fas fa-user-circle fa-2x"></i>
-                    </a>
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <a href="InformationAccount" class="dropdown-item">Thông tin chi tiết</a>
-                        <a href="Login" class="dropdown-item">Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
+            <span>WM</span>
         </div>
-    </header> 
+        <nav class="nav-menu">
+            <a href="sale" class="nav-item">
+                <span class="icon-products"></span>
+                Hàng hóa
+            </a>
+            <a href="SAThongBao" class="nav-item">
+                <span class="icon-import"></span>
+                Gửi yêu cầu
+            </a>
+            <a href="sa-customer" class="nav-item">
+                <span class="icon-export"></span>
+                Khách hàng
+            </a>
+
+        </nav>
+
+        <div class="header-right">
+            <div class="user-dropdown">
+                <a href="#" class="user-icon gradient" id="dropdownToggle">
+                    <i class="fas fa-user-circle fa-2x"></i>
+                </a>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="SAInformation" class="dropdown-item">Thông tin chi tiết</a>
+                    <a href="Logout" class="dropdown-item">Đăng xuất</a>
+                </div>
+            </div>      
+        </div>
+
+    </div>
+</header>
     <style> body { background-color: #f5f7fa; font-family: 'Inter', sans-serif; } .main-container { display: flex; gap: 25px; padding: 25px; } /* 🎨 FILTER SIDEBAR */ .filter-container { width: 280px; background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.07); padding: 22px; transition: all 0.3s ease; } .filter-container:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.1); } .filter-header { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; } .filter-header i { color: #007bff; font-size: 18px; } .filter-header h2 { font-size: 17px; font-weight: 600; margin: 0; color: #333; } .filter-group { margin-bottom: 22px; } .filter-group h3 { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; } .filter-group h3 i { color: #007bff; } .filter-container input[type="number"], .filter-container select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid #d0d7de; background-color: #fafbfc; font-size: 14px; transition: 0.2s; } .filter-container input:focus, .filter-container select:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.15); background-color: #fff; } .radio-group { padding-left: 4px; } .radio-group label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 14px; cursor: pointer; } .radio-group input { accent-color: #007bff; } .filter-container button { width: 100%; padding: 10px 0; border-radius: 10px; border: none; color: white; font-weight: 500; font-size: 14px; cursor: pointer; transition: background 0.3s ease; } .btn-clear { background-color: #adb5bd; margin-bottom: 10px; } .btn-clear:hover { background-color: #9aa1a7; } .btn-apply { background-color: #007bff; } .btn-apply:hover { background-color: #0069d9; } /* TABLE */ .table-container { flex: 1; background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.07); padding: 25px; } .search-container { display: flex; justify-content: flex-end; margin-bottom: 15px; padding: 0px !important; } .search-input { padding: 8px 10px; border-radius: 8px; border: 1px solid #ccc; width: 260px; } .suppliers-table { width: 100%; border-collapse: collapse; } .suppliers-table th, .suppliers-table td { padding: 12px; border-bottom: 1px solid #eee; } .suppliers-table th { background: #f1f3f5; color: #333; font-weight: 600; } .suppliers-table tr:hover { background-color: #f9fafb; } .table-container { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 20px; margin-top: 20px; } .suppliers-table { width: 100%; border-collapse: collapse; } .suppliers-table th, .suppliers-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; } .suppliers-table th { background-color: #f2f2f2; } .search-container { display: flex; align-items: center; margin-bottom: 20px; } .search-input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px; flex: 1; } .search-input:focus { border-color: #007bff; outline: none; } .pagination-container { margin-top: 20px; } .page-btn { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; margin: 0 3px; text-decoration: none; color: #333; } .page-btn.active { background-color: #007bff; color: white; border-color: #007bff; } .page-btn.disabled { pointer-events: none; opacity: 0.5; } .nav-item.dropdown { position: relative; } .nav-item.dropdown .dropdown-toggle { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; padding: 10px 15px; cursor: pointer; } .nav-item.dropdown .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-width: 180px; z-index: 1000; } .nav-item.dropdown:hover .dropdown-menu { display: block; } .dropdown-item { display: block; padding: 10px 15px; color: #333; text-decoration: none; transition: background 0.2s; } .dropdown-item:hover { background-color: #f2f2f2; } .dropdown-item.active { background-color: #007bff; color: white; } </style>    </head>
 
 
