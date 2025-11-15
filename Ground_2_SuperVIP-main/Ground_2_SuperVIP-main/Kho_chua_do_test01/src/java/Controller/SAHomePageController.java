@@ -25,6 +25,10 @@ public class SAHomePageController extends HttpServlet {
     private static final int DEFAULT_STOCK_THRESHOLD = 30;
     private static final int DEFAULT_BRANCH_ID_FOR_QTY = 1; // nếu không chọn chi nhánh, dùng 1
 
+    // pagination defaults
+    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int MAX_PAGE_SIZE = 200;
+
     private ProductDAO  productDAO;
     private BrandDAO    brandDAO;
     private SupplierDAO supplierDAO;
@@ -87,7 +91,7 @@ public class SAHomePageController extends HttpServlet {
         }
     }
 
-    /* ========================= LISTING ========================= */
+    /* ========================= LISTING with PAGINATION ========================= */
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         // Đọc ProductName từ form. Nếu chưa đổi form, fallback về "keyword"
@@ -111,13 +115,93 @@ public class SAHomePageController extends HttpServlet {
 
         int threshold = parseIntOrDefault(request.getParameter("stockThreshold"), DEFAULT_STOCK_THRESHOLD);
 
-        // Dùng DAO tối ưu: listProducts(..., StockFilter, threshold)
-        List<Product> products = productDAO.listProducts(
-                categoryNames,
-                productName,
-                ProductDAO.StockFilter.from(stock),
-                threshold
-        );
+        // --- pagination params ---
+        int page = parseIntOrDefault(request.getParameter("page"), 1);
+        if (page < 1) page = 1;
+
+        int pageSize = parseIntOrDefault(request.getParameter("pageSize"), DEFAULT_PAGE_SIZE);
+        if (pageSize < 1) pageSize = DEFAULT_PAGE_SIZE;
+        if (pageSize > MAX_PAGE_SIZE) pageSize = MAX_PAGE_SIZE;
+
+        List<Product> products = new ArrayList<>();     // products for current page (or full list if fallback)
+        long totalItems = 0;        // total count (to compute totalPages)
+        int totalPages = 1;
+
+        // 1) Try to use DAO's countProducts(...) to get totalItems first (so we can clamp page)
+        try {
+            // Try countProducts (may throw NoSuchMethodError if not present)
+            totalItems = productDAO.countProducts(
+                    categoryNames,
+                    productName,
+                    ProductDAO.StockFilter.from(stock),
+                    threshold
+            );
+
+            // compute total pages and clamp page
+            if (totalItems <= 0) totalPages = 1;
+            else totalPages = (int) ((totalItems + pageSize - 1) / pageSize);
+
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            // Now fetch the (clamped) page
+            try {
+                products = productDAO.listProducts(
+                        categoryNames,
+                        productName,
+                        ProductDAO.StockFilter.from(stock),
+                        threshold,
+                        page,
+                        pageSize
+                );
+            } catch (NoSuchMethodError | RuntimeException exListPaged) {
+                // If paged list method not available, fallback to non-paged list and sublist
+                List<Product> all = productDAO.listProducts(
+                        categoryNames,
+                        productName,
+                        ProductDAO.StockFilter.from(stock),
+                        threshold
+                );
+                if (all == null) all = new ArrayList<>();
+                int fromIndex = (page - 1) * pageSize;
+                int toIndex = Math.min(fromIndex + pageSize, all.size());
+                if (fromIndex >= all.size()) products = new ArrayList<>();
+                else products = new ArrayList<>(all.subList(fromIndex, toIndex));
+            }
+
+        } catch (NoSuchMethodError | RuntimeException exCount) {
+            // DAO doesn't have countProducts(...) — fallback strategy:
+            // call non-paged listProducts(...) to get all items, then compute paging in memory.
+            List<Product> allProducts = productDAO.listProducts(
+                    categoryNames,
+                    productName,
+                    ProductDAO.StockFilter.from(stock),
+                    threshold
+            );
+            if (allProducts == null) allProducts = new ArrayList<>();
+            totalItems = allProducts.size();
+
+            // recompute totalPages and clamp page
+            if (totalItems <= 0) totalPages = 1;
+            else totalPages = (int) ((totalItems + pageSize - 1) / pageSize);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            int fromIndex = (page - 1) * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, allProducts.size());
+            if (fromIndex >= allProducts.size()) {
+                products = new ArrayList<>();
+            } else {
+                products = new ArrayList<>(allProducts.subList(fromIndex, toIndex));
+            }
+        }
+
+        // compute total pages safely (if countProducts returned 0 earlier)
+        if (totalItems <= 0) totalPages = 1;
+        else totalPages = (int) ((totalItems + pageSize - 1) / pageSize);
+
+        // ensure current page not exceed totalPages
+        if (page > totalPages) page = totalPages;
 
         // Đẩy dữ liệu ra view (giữ lại các giá trị người dùng nhập/chọn)
         request.setAttribute("products", products);
@@ -126,6 +210,12 @@ public class SAHomePageController extends HttpServlet {
         request.setAttribute("selectedCategoryNames", categoryNames);
         request.setAttribute("stock", stock);
         request.setAttribute("stockThreshold", threshold);
+
+        // pagination attributes
+        request.setAttribute("currentPage", page);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalItems", totalItems);
 
         // Sidebar danh mục
         request.setAttribute("categories", categoryDAO.getAll());

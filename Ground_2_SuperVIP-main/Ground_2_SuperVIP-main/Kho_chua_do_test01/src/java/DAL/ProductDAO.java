@@ -612,4 +612,121 @@ private Integer getOrCreateInventoryIdForBranch(int branchId) throws SQLExceptio
         }
         return list;
     }
+        /**
+     * PHÂN TRANG: trả về 1 trang sản phẩm (sử dụng ORDER BY + OFFSET FETCH)
+     * page: 1-based (1 = trang đầu)
+     */
+    public List<Product> listProducts(List<String> categoryNames,
+                                      String keyword,
+                                      StockFilter stock,
+                                      int threshold,
+                                      int page,
+                                      int pageSize) {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+
+        List<Product> out = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(CTE_QTY);
+        sql.append(SELECT_BASE_WITH_QTY);
+
+        List<Object> params = new ArrayList<>();
+
+        // Danh mục theo tên
+        if (categoryNames != null && !categoryNames.isEmpty()) {
+            sql.append(" AND c.CategoryName IN (")
+               .append(String.join(",", Collections.nCopies(categoryNames.size(), "?")))
+               .append(") ");
+            params.addAll(categoryNames);
+        }
+
+        // Lọc theo ProductName (escape %/_ + ESCAPE '\')
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND p.ProductName LIKE ? ESCAPE '\\' ");
+            params.add("%" + escapeLike(keyword.trim()) + "%");
+        }
+
+        // Lọc theo tồn
+        StockFilter sf = (stock == null) ? StockFilter.ALL : stock;
+        switch (sf) {
+            case IN -> sql.append(" AND COALESCE(q.TotalQty,0) > 0 ");
+            case OUT -> sql.append(" AND COALESCE(q.TotalQty,0) = 0 ");
+            case BELOW_MIN -> { sql.append(" AND COALESCE(q.TotalQty,0) < ? "); params.add(threshold); }
+            case ABOVE_MAX -> { sql.append(" AND COALESCE(q.TotalQty,0) > ? "); params.add(threshold); }
+            case ALL -> { /* no-op */ }
+        }
+
+        // bắt buộc có ORDER BY trước OFFSET
+        sql.append(ORDER_BY_DEFAULT);
+        // OFFSET is zero-based
+        int offset = (page - 1) * pageSize;
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        // add offset & fetch params at the end
+        params.add(offset);
+        params.add(pageSize);
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            addAllParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) out.add(mapRowToProduct(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    /**
+     * Trả về tổng số sản phẩm khớp filter — dùng để tính totalPages.
+     */
+    public long countProducts(List<String> categoryNames,
+                              String keyword,
+                              StockFilter stock,
+                              int threshold) {
+        long total = 0;
+        StringBuilder sql = new StringBuilder(CTE_QTY);
+
+        // Dùng SELECT COUNT(1) trên Products + join qty (khớp với WHERE của listProducts)
+        sql.append("SELECT COUNT(1) AS TotalCount \n")
+           .append("FROM Products p \n")
+           .append("LEFT JOIN qty q ON q.ProductID = p.ProductID \n")
+           .append("LEFT JOIN Brands b ON b.BrandID = p.BrandID \n")
+           .append("LEFT JOIN Categories c ON c.CategoryID = p.CategoryID \n")
+           .append("LEFT JOIN Suppliers s ON s.SupplierID = p.SupplierID \n")
+           .append("WHERE 1=1 \n");
+
+        List<Object> params = new ArrayList<>();
+
+        if (categoryNames != null && !categoryNames.isEmpty()) {
+            sql.append(" AND c.CategoryName IN (")
+               .append(String.join(",", Collections.nCopies(categoryNames.size(), "?")))
+               .append(") ");
+            params.addAll(categoryNames);
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND p.ProductName LIKE ? ESCAPE '\\' ");
+            params.add("%" + escapeLike(keyword.trim()) + "%");
+        }
+
+        StockFilter sf = (stock == null) ? StockFilter.ALL : stock;
+        switch (sf) {
+            case IN -> sql.append(" AND COALESCE(q.TotalQty,0) > 0 ");
+            case OUT -> sql.append(" AND COALESCE(q.TotalQty,0) = 0 ");
+            case BELOW_MIN -> { sql.append(" AND COALESCE(q.TotalQty,0) < ? "); params.add(threshold); }
+            case ABOVE_MAX -> { sql.append(" AND COALESCE(q.TotalQty,0) > ? "); params.add(threshold); }
+            case ALL -> { /* no-op */ }
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            addAllParams(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) total = rs.getLong("TotalCount");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
 }
