@@ -67,13 +67,10 @@ public class CustomerController extends HttpServlet {
             e.printStackTrace();
         }
 
-        // Nếu người dùng bấm “Xóa bộ lọc” => reset về null
+        // Nếu người dùng bấm "Xóa bộ lọc" => redirect về trang không có filter
         if ("clear".equalsIgnoreCase(action)) {
-            keyword = null;
-            gender = "all";
-            branchId = 0;
-            minSpent = null;
-            maxSpent = null;
+            response.sendRedirect("Customer");
+            return;
         }
 
         // --- Phân trang ---
