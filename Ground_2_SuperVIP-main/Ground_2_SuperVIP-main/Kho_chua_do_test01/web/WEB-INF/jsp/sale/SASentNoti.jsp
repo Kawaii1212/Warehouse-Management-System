@@ -32,7 +32,7 @@
            
             <a href="sale" class="nav-item "><span class="icon-products"></span> Hàng hóa</a>
             <a href="SAThongBao" class="nav-item active"><span class="icon-transactions"></span> Gửi yêu cầu</a>
-            <a href="Supplier" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
+            <a href="sa-customer" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
 
         </nav>
 

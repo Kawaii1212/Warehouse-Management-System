@@ -10,13 +10,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sale/sale.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/header.css"/>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sale/SASentNoti.css">
     <link rel="stylesheet" href="css/header.css"/>
-   
 </head>
 <body>
-    
+
 <header class="header">
     <div class="header-main">
         <div class="logo">
@@ -24,11 +23,9 @@
             <span>WM</span>
         </div>
         <nav class="nav-menu">
-           
             <a href="sale" class="nav-item active "><span class="icon-products"></span> Hàng hóa</a>
             <a href="SAThongBao" class="nav-item "><span class="icon-transactions"></span> Gửi yêu cầu</a>
             <a href="sa-customer" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
-
         </nav>
 
         <div class="header-right">
@@ -44,7 +41,6 @@
         </div>
     </div>
 </header>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -122,21 +118,21 @@ document.addEventListener('DOMContentLoaded', function () {
             <h1 class="page-title">Hàng hóa</h1>
 
             <!-- Tìm kiếm giữ lại filter hiện tại -->
-                <form action="${pageContext.request.contextPath}/sale" method="get" class="search-container" style="display:flex;gap:8px;align-items:center">
-                    <input type="hidden" name="action" value="list"/>
+            <form action="${pageContext.request.contextPath}/sale" method="get" class="search-container" style="display:flex;gap:8px;align-items:center">
+                <input type="hidden" name="action" value="list"/>
 
-                    <!-- Render lại categoryName đang chọn để không mất filter khi tìm -->
-                    <c:forEach var="cn" items="${selectedCategoryNames}">
-                        <input type="hidden" name="categoryName" value="${cn}"/>
-                    </c:forEach>
+                <!-- Render lại categoryName đang chọn để không mất filter khi tìm -->
+                <c:forEach var="cn" items="${selectedCategoryNames}">
+                    <input type="hidden" name="categoryName" value="${cn}"/>
+                </c:forEach>
 
-                    <input type="hidden" name="stock" value="${stock}"/>
-                    <input type="hidden" name="stockThreshold" value="${stockThreshold}"/>
+                <input type="hidden" name="stock" value="${stock}"/>
+                <input type="hidden" name="stockThreshold" value="${stockThreshold}"/>
 
-                    <input type="text" name="keyword" class="search-input" placeholder="Theo tên hàng"
-                           value="<c:out value='${keyword}'/>" />
-                    <button type="submit" class="btn btn-outline">Tìm</button>
-                </form>
+                <input type="text" name="keyword" class="search-input" placeholder="Theo tên hàng"
+                       value="<c:out value='${keyword}'/>" />
+                <button type="submit" class="btn btn-outline">Tìm</button>
+            </form>
 
             <div class="action-buttons">
                 <!-- Với SAHomePage chỉ xem, bạn có thể ẩn các nút CRUD -->
@@ -219,6 +215,131 @@ document.addEventListener('DOMContentLoaded', function () {
                 </tbody>
             </table>
         </div>
+
+        <!-- ===== PAGINATION ===== -->
+        <div class="pagination-wrapper" style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+            <!-- Showing X - Y of N -->
+            <div class="pagination-info" style="color:#374151;">
+                <c:set var="curPage" value="${currentPage != null ? currentPage : 1}" />
+                <c:set var="ps" value="${pageSize != null ? pageSize : 20}" />
+                <c:set var="total" value="${totalItems != null ? totalItems : 0}" />
+                <c:set var="startIndex" value="${(curPage - 1) * ps + 1}" />
+                <c:set var="endIndexTemp" value="${curPage * ps}" />
+                <c:set var="endIndex" value="${endIndexTemp > total ? total : endIndexTemp}" />
+                <c:choose>
+                    <c:when test="${total == 0}">
+                        Hiển thị 0 sản phẩm
+                    </c:when>
+                    <c:otherwise>
+                        Hiển thị <strong>${startIndex}</strong> - <strong>${endIndex}</strong> trên tổng <strong>${total}</strong>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <!-- Page links -->
+            <div class="pagination-controls" style="display:flex; gap:8px; align-items:center;">
+                <c:set var="tp" value="${totalPages != null ? totalPages : 1}" />
+                <!-- Prev -->
+                <c:choose>
+                    <c:when test="${curPage > 1}">
+                        <c:url var="prevUrl" value="/sale">
+                            <c:param name="action" value="list"/>
+                            <c:param name="page" value="${curPage - 1}"/>
+                            <c:param name="pageSize" value="${ps}"/>
+                            <c:forEach var="cn" items="${selectedCategoryNames}">
+                                <c:param name="categoryName" value="${cn}" />
+                            </c:forEach>
+                            <c:param name="stock" value="${stock}" />
+                            <c:param name="stockThreshold" value="${stockThreshold}" />
+                            <c:param name="keyword" value="${keyword}" />
+                        </c:url>
+                        <a class="btn" href="${prevUrl}">« Prev</a>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="btn disabled">« Prev</span>
+                    </c:otherwise>
+                </c:choose>
+
+                <!-- Page numbers window (currentPage - 3 ... currentPage +3) -->
+                <c:set var="startPage" value="${curPage - 3}" />
+                <c:set var="endPage" value="${curPage + 3}" />
+                <c:if test="${startPage < 1}">
+                    <c:set var="endPage" value="${endPage + (1 - startPage)}" />
+                    <c:set var="startPage" value="1" />
+                </c:if>
+                <c:if test="${endPage > tp}">
+                    <c:set var="startPage" value="${startPage - (endPage - tp)}" />
+                    <c:set var="endPage" value="${tp}" />
+                </c:if>
+                <c:if test="${startPage < 1}">
+                    <c:set var="startPage" value="1" />
+                </c:if>
+
+                <c:forEach var="i" begin="${startPage}" end="${endPage}">
+                    <c:url var="pageUrl" value="/sale">
+                        <c:param name="action" value="list"/>
+                        <c:param name="page" value="${i}"/>
+                        <c:param name="pageSize" value="${ps}"/>
+                        <c:forEach var="cn" items="${selectedCategoryNames}">
+                            <c:param name="categoryName" value="${cn}" />
+                        </c:forEach>
+                        <c:param name="stock" value="${stock}" />
+                        <c:param name="stockThreshold" value="${stockThreshold}" />
+                        <c:param name="keyword" value="${keyword}" />
+                    </c:url>
+
+                    <c:choose>
+                        <c:when test="${i == curPage}">
+                            <a class="btn active" href="${pageUrl}" style="font-weight:bold;">${i}</a>
+                        </c:when>
+                        <c:otherwise>
+                            <a class="btn" href="${pageUrl}">${i}</a>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+
+                <!-- Next -->
+                <c:choose>
+                    <c:when test="${curPage < tp}">
+                        <c:url var="nextUrl" value="/sale">
+                            <c:param name="action" value="list"/>
+                            <c:param name="page" value="${curPage + 1}"/>
+                            <c:param name="pageSize" value="${ps}"/>
+                            <c:forEach var="cn" items="${selectedCategoryNames}">
+                                <c:param name="categoryName" value="${cn}" />
+                            </c:forEach>
+                            <c:param name="stock" value="${stock}" />
+                            <c:param name="stockThreshold" value="${stockThreshold}" />
+                            <c:param name="keyword" value="${keyword}" />
+                        </c:url>
+                        <a class="btn" href="${nextUrl}">Next »</a>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="btn disabled">Next »</span>
+                    </c:otherwise>
+                </c:choose>
+
+                <!-- Page size selector -->
+                <form action="${pageContext.request.contextPath}/sale" method="get" style="display:inline-block; margin-left:8px;">
+                    <input type="hidden" name="action" value="list"/>
+                    <input type="hidden" name="page" value="1"/>
+                    <c:forEach var="cn" items="${selectedCategoryNames}">
+                        <input type="hidden" name="categoryName" value="${cn}"/>
+                    </c:forEach>
+                    <input type="hidden" name="stock" value="${stock}"/>
+                    <input type="hidden" name="stockThreshold" value="${stockThreshold}"/>
+                    <input type="hidden" name="keyword" value="${keyword}"/>
+                    <select name="pageSize" onchange="this.form.submit()" style="padding:6px; border-radius:6px;">
+                        <option value="10" <c:if test="${ps == 10}">selected</c:if>>10 / trang</option>
+                        <option value="20" <c:if test="${ps == 20}">selected</c:if>>20 / trang</option>
+                        <option value="50" <c:if test="${ps == 50}">selected</c:if>>50 / trang</option>
+                        <option value="100" <c:if test="${ps == 100}">selected</c:if>>100 / trang</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <!-- ===== END PAGINATION ===== -->
+
     </main>
 </div>
 
