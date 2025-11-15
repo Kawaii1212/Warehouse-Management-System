@@ -24,8 +24,8 @@ public class LoginController extends HttpServlet {
     private static final int STATUS_ACTIVE = 1;
     private static final int STATUS_UNVERIFIED = 2;
 
-    private static final int SESSION_TIMEOUT_DEFAULT_SECONDS = 30 * 60; // 30 minutes
-    private static final int SESSION_TIMEOUT_REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60; // 30 days
+    private static final int SESSION_TIMEOUT_DEFAULT_SECONDS = 24 * 60 * 60; // 24 hours
+    private static final int SESSION_TIMEOUT_REMEMBER_ME_SECONDS = 15 * 24 * 60 * 60; // 15 days
 
     private UserDAO userDAO;
 
