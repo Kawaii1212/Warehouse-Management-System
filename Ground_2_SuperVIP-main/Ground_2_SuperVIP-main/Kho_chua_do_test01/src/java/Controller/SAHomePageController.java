@@ -284,7 +284,7 @@ public class SAHomePageController extends HttpServlet {
         }
 
         request.setAttribute("product", product);
-        request.getRequestDispatcher("/WEB-INF/jsp/admin/test.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/admin/test2.jsp").forward(request, response);
     }
 
     /* ========================= CRUD ========================= */
