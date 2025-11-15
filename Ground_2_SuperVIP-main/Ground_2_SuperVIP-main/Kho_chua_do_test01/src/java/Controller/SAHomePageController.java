@@ -26,7 +26,7 @@ public class SAHomePageController extends HttpServlet {
     private static final int DEFAULT_BRANCH_ID_FOR_QTY = 1; // nếu không chọn chi nhánh, dùng 1
 
     // pagination defaults
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int MAX_PAGE_SIZE = 200;
 
     private ProductDAO  productDAO;

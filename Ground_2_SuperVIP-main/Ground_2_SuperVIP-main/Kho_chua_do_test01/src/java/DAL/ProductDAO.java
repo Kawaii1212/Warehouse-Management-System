@@ -623,7 +623,7 @@ private Integer getOrCreateInventoryIdForBranch(int branchId) throws SQLExceptio
                                       int page,
                                       int pageSize) {
         if (page < 1) page = 1;
-        if (pageSize < 1) pageSize = 20;
+        if (pageSize < 1) pageSize = 10;
 
         List<Product> out = new ArrayList<>();
         StringBuilder sql = new StringBuilder(CTE_QTY);
