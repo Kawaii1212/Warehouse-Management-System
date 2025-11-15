@@ -75,13 +75,6 @@
                             </div>
                         </div>
 
-                        <div class="stat-card">
-                            <div class="stat-icon orders">📋</div>
-                            <div class="stat-content">
-                                <h3><%= stats.getReturnCount() %></h3>
-                                <p>Phiếu trả hàng</p>
-                            </div>
-                        </div>
                         <% } %>
 
                         <%
