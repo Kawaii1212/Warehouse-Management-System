@@ -1,16 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package Model;
+/* * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template */ package Model;
 
 import java.util.Date;
 
 /**
- *
- * @author Admin
+ * * * @author Admin
  */
 public class Customer {
+
     private int customerID;
     private String fullname;
     private String phoneNumber;
@@ -21,6 +17,7 @@ public class Customer {
     private Date createdAt;
     private Date updatedAt;
     private Double totalSpent;
+    private Integer branchId;
 
     public Customer() {
     }
@@ -116,6 +113,14 @@ public class Customer {
 
     public void setTotalSpent(Double setTotalSpent) {
         this.totalSpent = setTotalSpent;
+    }
+
+    public Integer getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Integer branchId) {
+        this.branchId = branchId;
     }
 
     @Override

@@ -118,11 +118,13 @@
                                        value="<%= request.getAttribute("searchKeyword") != null ? request.getAttribute("searchKeyword") : "" %>" />
                             </div>
                         </form>
-                        <div class="btn-group">
-                            <a href="AddUser" class="btn add">Thêm nhân viên</a>
+                       <div class="btn-group">
+                            <c:if test="${sessionScope.currentUser.roleId == 0}">
+                                <!-- Chỉ hiển thị button "Thêm nhân viên" cho role 0 (Admin) -->
+                                <a href="AddUser" class="btn add">Thêm nhân viên</a>
+                            </c:if>
                             <a href="ShiftUser" class="btn add">Ca làm</a>                          
-                        </div>                       
-
+                        </div>   
                     </div>
 
                     <table class="emp-table">
