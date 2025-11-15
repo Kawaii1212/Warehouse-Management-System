@@ -55,6 +55,55 @@ public class UserDAO extends DataBaseContext {
         return user;
     }
 
+
+    public List<User> getUsersByBranchId(Integer branchId) {
+        List<User> list = new ArrayList<>();
+        
+        if (branchId == null) {
+            return list; // Return empty list if branchId is null
+        }
+        
+        String query = "SELECT u.UserID, u.FullName, u.Email, u.Phone, u.PasswordHash, "
+                + "u.BranchID, u.WarehouseID, u.RoleID, u.IsActive, u.Gender, u.AvaUrl, u.Address, "
+                + "r.RoleName, b.BranchName, w.WarehouseName "
+                + "FROM Users u "
+                + "LEFT JOIN Roles r ON u.RoleID = r.RoleID "
+                + "LEFT JOIN Branches b ON u.BranchID = b.BranchID "
+                + "LEFT JOIN Warehouses w ON u.WarehouseID = w.WarehouseID "
+                + "WHERE u.BranchID = ?";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, branchId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setPhone(rs.getString("Phone"));
+                // ✅ Dùng getObject để giữ đúng NULL thay vì 0
+                user.setBranchId((Integer) rs.getObject("BranchID"));
+                user.setWarehouseId((Integer) rs.getObject("WarehouseID"));
+                user.setRoleId(rs.getInt("RoleID"));
+                user.setRoleName(rs.getString("RoleName"));
+                user.setIsActive(rs.getInt("IsActive"));
+                user.setAvaUrl(rs.getString("AvaUrl"));
+                user.setAddress(rs.getString("Address"));
+                user.setBranchName(rs.getString("BranchName"));
+                user.setWarehouseName(rs.getString("WarehouseName"));
+                list.add(user);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return list;
+    }
+
     /**
      * Get user by ID with full information
      */
