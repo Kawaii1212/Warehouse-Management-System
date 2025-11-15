@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- Showing X - Y of N -->
             <div class="pagination-info" style="color:#374151;">
                 <c:set var="curPage" value="${currentPage != null ? currentPage : 1}" />
-                <c:set var="ps" value="${pageSize != null ? pageSize : 20}" />
+                <c:set var="ps" value="${pageSize != null ? pageSize : 10}" />
                 <c:set var="total" value="${totalItems != null ? totalItems : 0}" />
                 <c:set var="startIndex" value="${(curPage - 1) * ps + 1}" />
                 <c:set var="endIndexTemp" value="${curPage * ps}" />
