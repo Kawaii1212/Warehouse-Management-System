@@ -10,56 +10,10 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sale/sale.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/header.css"/>
-    <style>
-        /* bạn có thể giữ lại style cũ của bạn ở đây, tớ rút gọn để tập trung vào JSTL */
-        .header { background: linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%); color:#fff; box-shadow: 0 2px 10px rgba(0,0,0,.1); }
-        .header-main { padding: 1rem 2rem; display:flex; align-items:center; gap:2rem; }
-        .logo { display:flex; align-items:center; gap:.5rem; font-size:1.5rem; font-weight:700; }
-        .logo-icon { background:#14b8a6; width:40px; height:40px; border-radius:.5rem; display:flex; align-items:center; justify-content:center; }
-        .nav-menu { display:flex; gap:0; flex:1; }
-        .nav-item { display:flex; align-items:center; gap:.5rem; padding:.75rem 1.5rem; color:rgba(255,255,255,.9); text-decoration:none; border-radius:.5rem; transition:.2s; font-weight:500; }
-        .nav-item:hover, .nav-item.active { background:rgba(255,255,255,.1); color:#fff; }
-        .user-dropdown { position:relative; display:inline-block; }
-        .user-dropdown .dropdown-menu { position:absolute; top:40px; right:0; background:#fff; border:1px solid #ddd; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.15); min-width:160px; display:none; z-index:1000; }
-        .user-dropdown.active .dropdown-menu { display:block; }
-        .dropdown-item { display:block; padding:10px 14px; color:#333; text-decoration:none; font-size:14px; }
-        .dropdown-item:hover { background:#f2f5ff; color:#0056d6; }
-        .gradient { background:linear-gradient(45deg,#007bff,#00aaff)!important; border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; }
-        .container { display:flex; gap:16px; padding:16px; }
-        .sidebar { width:280px; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:12px; height:fit-content; }
-        .sidebar-section { margin-bottom:14px; }
-        .sidebar-title { font-size:14px; font-weight:700; margin-bottom:10px; }
-        .main-content { flex:1; }
-        .content-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; }
-        .search-bar { display:flex; align-items:center; gap:8px; }
-        .search-input { padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; min-width:260px; }
-        .btn { padding:8px 10px; border-radius:6px; border:1px solid #d1d5db; background:#fff; cursor:pointer; }
-        .btn-primary { background:#2563eb; color:#fff; border-color:#2563eb; }
-        .table-wrapper { background:#fff; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; }
-        .data-table { width:100%; border-collapse:collapse; }
-        .data-table th, .data-table td { padding:10px 12px; border-bottom:1px solid #f1f5f9; text-align:left; }
-        .data-table thead th { background:#f8fafc; font-size:13px; text-transform:uppercase; letter-spacing:.02em; color:#475569; }
-        .qty-pill { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #e5e7eb; font-weight:600; font-size:12px; }
-        .pill-in { background:#ecfdf5; border-color:#10b981; color:#065f46; }
-        .pill-out { background:#fef2f2; border-color:#ef4444; color:#991b1b; }
-        .filter-item { margin-bottom:8px; }
-       
-
-        .user-dropdown { position: relative; display: inline-block; }
-        .user-dropdown .dropdown-menu {
-            position: absolute; top: 40px; right: 0; background: white; border: 1px solid #ddd;
-            border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); min-width: 160px; display: none; z-index: 1000;
-        }
-        .user-dropdown.active .dropdown-menu { display: block; }
-        .dropdown-item { display: block; padding: 10px 14px; color: #333; text-decoration: none; font-size: 14px; }
-        .dropdown-item:hover { background: #f2f5ff; color: #0056d6; }
-        .user-icon { display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; }
-        .user-icon i { color: #fff !important; }
-        .gradient { background: linear-gradient(45deg, #007bff, #00aaff) !important; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
-        .header .user-icon i { color: #fff !important; }
-        .header .gradient { background: linear-gradient(45deg, #007bff, #00aaff) !important; border-radius: 50% !important; }
-    
-    </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sale/SASentNoti.css">
+    <link rel="stylesheet" href="css/header.css"/>
+   
 </head>
 <body>
     
@@ -71,9 +25,9 @@
         </div>
         <nav class="nav-menu">
            
-            <a href="${pageContext.request.contextPath}/sale" class="nav-item active"><span class="icon-products"></span> Hàng hóa</a>
-            <a href="${pageContext.request.contextPath}/SAThongBao" class="nav-item"><span class="icon-transactions"></span> Gửi yêu cầu</a>
-            <a href="SACustomer" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
+            <a href="sale" class="nav-item active "><span class="icon-products"></span> Hàng hóa</a>
+            <a href="SAThongBao" class="nav-item "><span class="icon-transactions"></span> Gửi yêu cầu</a>
+            <a href="sa-customer" class="nav-item"><span class="icon-partners"></span> Đối tác</a>
 
         </nav>
 
@@ -90,6 +44,7 @@
         </div>
     </div>
 </header>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
