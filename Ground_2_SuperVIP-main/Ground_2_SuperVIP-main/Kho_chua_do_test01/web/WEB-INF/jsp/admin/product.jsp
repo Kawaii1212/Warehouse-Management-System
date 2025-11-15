@@ -14,10 +14,11 @@
         <title>Quản lý Hàng hóa - VIP Store</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        <style>
+
+    </head>
+            <style>
          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; } .main-container { display: flex; min-height: 100vh; padding-top: 70px; } /* Sidebar Styling */ .sidebar { width: 280px; background: white; border-right: 1px solid #e2e8f0; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; } .sidebar h4 { color: #2d3748; font-size: 16px; font-weight: 600; margin-bottom: 20px; border-bottom: 2px solid #3182ce; padding-bottom: 10px; } .filter-section { margin-bottom: 25px; } .filter-section label { display: block; color: #4a5568; font-weight: 500; margin-bottom: 8px; font-size: 14px; } .filter-section select, .filter-section input[type="text"], .filter-section input[type="number"] { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; } .filter-section input[type="radio"] { margin-right: 8px; } .filter-item { margin-bottom: 8px; display: flex; align-items: center; } .filter-item label { margin-bottom: 0; font-weight: normal; font-size: 14px; } .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%); color: white; } .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4); } .btn-secondary { background: #e2e8f0; color: #4a5568; } .btn-sm { padding: 6px 12px; font-size: 12px; } /* Content Area */ .content { flex: 1; padding: 20px 30px; } .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; } .page-title { font-size: 28px; font-weight: 700; color: #2d3748; margin: 0; } .header-actions { display: flex; gap: 15px; align-items: center; } .search-container { position: relative; } .search-input { padding: 10px 40px 10px 15px; border: 1px solid #d1d5db; border-radius: 8px; width: 250px; font-size: 14px; } .search-input:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1); } /* Products Table */ .products-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden; } .products-header { padding: 20px 25px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; } .products-title { font-size: 18px; font-weight: 600; color: #2d3748; } .products-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0; } .products-table thead { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); } .products-table th { padding: 18px 20px; text-align: left; font-weight: 700; color: white; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; border: none; position: relative; } .products-table th:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 25%; bottom: 25%; width: 1px; background: rgba(255,255,255,0.2); } .products-table td { padding: 16px 20px; border: none; border-bottom: 1px solid #f1f5f9; vertical-align: middle; transition: all 0.3s ease; } .product-row { cursor: pointer; transition: all 0.3s ease; position: relative; } .product-row:hover { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); } .product-row:hover td { border-color: #cbd5e1; } .product-row:last-child td { border-bottom: none; } .product-image { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: #f7fafc; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; } .product-image-placeholder { width: 60px; height: 60px; border-radius: 10px; background: #f8fafc; border: 2px dashed #e2e8f0; display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 12px; } .product-image-placeholder::before { content: ''; width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; } .product-row:hover .product-image { transform: scale(1.05); border-color: #667eea; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2); } .product-name { font-size: 14px; font-weight: 600; color: #2d3748; line-height: 1.3; max-width: 200px; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .product-code { font-size: 12px; color: #718096; font-family: 'Courier New', monospace; background: #f7fafc; padding: 2px 8px; border-radius: 12px; font-weight: 500; } .product-price { font-size: 16px; font-weight: 700; color: #e53e3e; position: relative; } .product-price::before { content: '₫'; font-size: 12px; vertical-align: top; margin-right: 2px; } .product-stock { font-size: 14px; font-weight: 700; padding: 6px 16px; border-radius: 25px; display: inline-block; min-width: 70px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; } .product-stock.in-stock { color: #22543d; background: linear-gradient(135deg, #c6f6d5, #9ae6b4); border: 2px solid #38a169; box-shadow: 0 2px 8px rgba(56, 161, 105, 0.3); } .product-stock.out-of-stock { color: #742a2a; background: linear-gradient(135deg, #fed7d7, #feb2b2); border: 2px solid #e53e3e; box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3); } /* Badge styles - match image */ .badge { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; } .badge-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; } .badge-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; } /* Simple table styling */ .product-name { font-size: 14px; color: #2d3748; line-height: 1.4; } .product-price { font-size: 14px; font-weight: 600; color: #e53e3e; } .stock-quantity { font-size: 14px; font-weight: 500; color: #2d3748; } .product-code { font-size: 13px; font-weight: 500; color: #4a5568; } /* Detail row styles */ .detail-row { background: #f8fafc; } .detail-cell { padding: 0 !important; border: none !important; } .detail-content { padding: 20px; background: white; margin: 10px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border-left: 4px solid #667eea; } .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; } .detail-header h6 { margin: 0; color: #2d3748; font-weight: 600; } .close-btn { background: #e2e8f0; border: none; border-radius: 50%; width: 25px; height: 25px; font-size: 16px; color: #4a5568; cursor: pointer; display: flex; align-items: center; justify-content: center; } .close-btn:hover { background: #cbd5e0; } .detail-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .info-left, .info-right { display: flex; flex-direction: column; gap: 8px; } .info-item { font-size: 14px; color: #2d3748; } .info-item strong { color: #4a5568; margin-right: 8px; } /* Row hover and selection */ .product-row { cursor: pointer; transition: background-color 0.2s ease; } .product-row:hover { background: #f7fafc; } .product-row.selected { background: #e6fffa; } /* Description section */ .detail-description { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0; } .description-text { margin: 8px 0 0 0; color: #2d3748; line-height: 1.5; font-size: 14px; background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 3px solid #667eea; } .stock-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; } .stock-available { background: #c6f6d5; color: #22543d; } .stock-low { background: #fed7d7; color: #742a2a; } .product-actions { position: absolute; top: 15px; right: 15px; display: none; gap: 8px; } .product-card:hover .product-actions { display: flex; } .action-btn { width: 32px; height: 32px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 12px; } .btn-edit { background: #3182ce; color: white; } .btn-edit:hover { background: #2c5aa0; } .btn-delete { background: #e53e3e; color: white; } .btn-delete:hover { background: #c53030; } /* Additional styling for better match with mockup */ .products-count { font-size: 14px; color: #718096; background: #f7fafc; padding: 6px 12px; border-radius: 6px; } .product-card .product-info span { display: block; margin-bottom: 2px; } .product-card .product-info strong { min-width: 80px; display: inline-block; } /* Status badges */ .status-active { background: #c6f6d5; color: #22543d; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; } .status-inactive { background: #fed7d7; color: #742a2a; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; } /* Responsive design */ @media (max-width: 768px) { .main-container { flex-direction: column; } .sidebar { width: 100%; position: relative; top: 0; height: auto; } .page-header { flex-direction: column; gap: 15px; align-items: flex-start; } .header-actions { width: 100%; justify-content: space-between; } .search-input { width: 200px; } .products-table { font-size: 12px; } .products-table th, .products-table td { padding: 8px 6px; } .product-name { font-size: 11px; line-height: 1.2; max-width: 120px; } .product-image { width: 40px; height: 40px; } .product-code { font-size: 10px; } .product-stock { padding: 2px 6px; font-size: 10px; } .modal-dialog { margin: 10px; max-width: 95%; } .product-detail-grid { grid-template-columns: 1fr; gap: 10px; } .product-detail-item { padding: 12px; } .detail-content { grid-template-columns: 1fr; gap: 15px; } .detail-info { grid-template-columns: 1fr; } .detail-image, .detail-image-placeholder { width: 80px; height: 80px; } .detail-info { grid-template-columns: 1fr; gap: 10px; } .detail-content { margin: 5px 10px; padding: 15px; } .description-text { font-size: 13px; padding: 10px; } }
         </style>
-    </head>
 
     <body>
         <%@ include file="header_admin.jsp" %>
@@ -139,6 +140,12 @@
                                 <i class="fas fa-plus"></i> Thêm mới
                             </a>
                         </c:if>
+
+                        <!-- Export Excel button (đã thêm) -->
+                        <button type="button" id="btnExport" class="btn btn-outline-success btn-sm" style="margin-left:8px;">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+
                     </div>
                 </div>
 
@@ -462,191 +469,220 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- SheetJS library for Excel export -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
         <script>
-                                                    let currentProductId = null;
+            let currentProductId = null;
 
-                                                    // Toggle product detail row
-                                                    function toggleRowDetail(rowElement, productId) {
-                                                        const detailRow = document.getElementById('detail-' + productId);
-                                                        const allProductRows = document.querySelectorAll('.product-row');
-                                                        const allDetailRows = document.querySelectorAll('.detail-row');
+            // Toggle product detail row
+            function toggleRowDetail(rowElement, productId) {
+                const detailRow = document.getElementById('detail-' + productId);
+                const allProductRows = document.querySelectorAll('.product-row');
+                const allDetailRows = document.querySelectorAll('.detail-row');
 
-                                                        // Close all other detail rows and remove selection
-                                                        allDetailRows.forEach(row => {
-                                                            if (row.id !== 'detail-' + productId) {
-                                                                row.style.display = 'none';
-                                                            }
-                                                        });
+                // Close all other detail rows and remove selection
+                allDetailRows.forEach(row => {
+                    if (row.id !== 'detail-' + productId) {
+                        row.style.display = 'none';
+                    }
+                });
 
-                                                        allProductRows.forEach(row => {
-                                                            if (row !== rowElement) {
-                                                                row.classList.remove('selected');
-                                                            }
-                                                        });
+                allProductRows.forEach(row => {
+                    if (row !== rowElement) {
+                        row.classList.remove('selected');
+                    }
+                });
 
-                                                        // Toggle current detail row
-                                                        if (detailRow.style.display === 'none' || detailRow.style.display === '') {
-                                                            detailRow.style.display = 'table-row';
-                                                            rowElement.classList.add('selected');
+                // Toggle current detail row
+                if (detailRow.style.display === 'none' || detailRow.style.display === '') {
+                    detailRow.style.display = 'table-row';
+                    rowElement.classList.add('selected');
 
-                                                            // Smooth scroll to detail
-                                                            setTimeout(() => {
-                                                                detailRow.scrollIntoView({
-                                                                    behavior: 'smooth',
-                                                                    block: 'nearest'
-                                                                });
-                                                            }, 100);
-                                                        } else {
-                                                            detailRow.style.display = 'none';
-                                                            rowElement.classList.remove('selected');
-                                                        }
-                                                    }
+                    // Smooth scroll to detail
+                    setTimeout(() => {
+                        detailRow.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest'
+                        });
+                    }, 100);
+                } else {
+                    detailRow.style.display = 'none';
+                    rowElement.classList.remove('selected');
+                }
+            }
 
-                                                    // Close detail row
-                                                    function closeDetail(productId) {
-                                                        const detailRow = document.getElementById('detail-' + productId);
-                                                        const productRow = document.querySelector(`tr[data-product-id="${productId}"]`);
+            // Close detail row
+            function closeDetail(productId) {
+                const detailRow = document.getElementById('detail-' + productId);
+                const productRow = document.querySelector(`tr[data-product-id="${productId}"]`);
 
-                                                        if (detailRow) {
-                                                            detailRow.style.display = 'none';
-                                                        }
+                if (detailRow) {
+                    detailRow.style.display = 'none';
+                }
 
-                                                        if (productRow) {
-                                                            productRow.classList.remove('selected');
-                                                        }
-                                                    }
+                if (productRow) {
+                    productRow.classList.remove('selected');
+                }
+            }
 
-                                                    // Create product detail HTML (như trong hình)
-                                                    function createProductDetailHTML(productId) {
-                                                        const demoProducts = {
-                                                            '1': {
-                                                                name: 'iPhone 15 Pro Max',
-                                                                fullName: 'iPhone 15 Pro Max 256GB, chip A17 Pro, màn hình Super Retina XDR 6.7 inch',
-                                                                code: 'IP15PM256',
-                                                                brand: 'Apple',
-                                                                category: 'Điện thoại',
-                                                                supplier: 'Công ty TNHH Apple Việt Nam',
-                                                                costPrice: '25.000.000 ₫',
-                                                                retailPrice: '29.990.000 ₫',
-                                                                discount: '0.0%',
-                                                                createDate: '20/10/2025 00:00',
-                                                                stock: 5
-                                                            },
-                                                            '2': {
-                                                                name: 'Samsung Galaxy S24 Ultra',
-                                                                fullName: 'Samsung Galaxy S24 Ultra 512GB, S Pen, màn hình Dynamic AMOLED 6.8 inch',
-                                                                code: 'SGS24U512',
-                                                                brand: 'Samsung',
-                                                                category: 'Điện thoại',
-                                                                supplier: 'Samsung Electronics Việt Nam',
-                                                                costPrice: '23.000.000 ₫',
-                                                                retailPrice: '26.990.000 ₫',
-                                                                discount: '0.0%',
-                                                                createDate: '20/10/2025 00:00',
-                                                                stock: 4
-                                                            },
-                                                            '3': {
-                                                                name: 'Xiaomi 14 Ultra',
-                                                                fullName: 'Xiaomi 14 Ultra 512GB, camera Leica, màn hình LTPO OLED 6.73 inch',
-                                                                code: 'MI14U512',
-                                                                brand: 'Xiaomi',
-                                                                category: 'Điện thoại',
-                                                                supplier: 'Xiaomi Technology Việt Nam',
-                                                                costPrice: '19.000.000 ₫',
-                                                                retailPrice: '21.990.000 ₫',
-                                                                discount: '0.0%',
-                                                                createDate: '20/10/2025 00:00',
-                                                                stock: 3
-                                                            }
-                                                        };
+            // Export products table to Excel using SheetJS
+            function exportProductsToExcel() {
+                const table = document.querySelector('.products-table');
+                if (!table) {
+                    alert('Không tìm thấy bảng sản phẩm để xuất.');
+                    return;
+                }
 
-                                                        const product = demoProducts[productId] || demoProducts['1'];
+                // Get headers
+                const theadThs = Array.from(table.querySelectorAll('thead th'));
+                // Determine index of "THAO TÁC" column (to skip)
+                let skipColIndex = -1;
+                theadThs.forEach((th, idx) => {
+                    const txt = th.textContent.trim().toUpperCase();
+                    if (txt === 'THAO TÁC' || txt === 'ACTIONS') skipColIndex = idx;
+                });
 
-                                                        return `
-                <div class="product-detail-grid">
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Mã sản phẩm</span>
-                        <span class="product-detail-value">${product.code}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Tên sản phẩm</span>
-                        <span class="product-detail-value">${product.name}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Mô tả chi tiết</span>
-                        <span class="product-detail-value">${product.fullName}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Nhóm hàng</span>
-                        <span class="product-detail-value">${product.category}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Thương hiệu</span>
-                        <span class="product-detail-value">${product.brand}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Nhà cung cấp</span>
-                        <span class="product-detail-value">${product.supplier}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Thời gian tạo</span>
-                        <span class="product-detail-value">${product.createDate}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Giá vốn</span>
-                        <span class="product-detail-value price">${product.costPrice}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Giá bán</span>
-                        <span class="product-detail-value price">${product.retailPrice}</span>
-                    </div>
-                    <div class="product-detail-item">
-                        <span class="product-detail-label">Chiết khấu</span>
-                        <span class="product-detail-value">${product.discount}</span>
-                    </div>
-                </div>
-            `;
-                                                    }
+                const headers = theadThs
+                    .map(th => th.textContent.trim())
+                    .filter((_, idx) => idx !== skipColIndex);
 
-                                                    // Edit product
-                                                    function editProduct(productId) {
-                                                        window.location.href = '${pageContext.request.contextPath}/product?action=edit&id=' + productId;
-                                                    }
+                // Build data rows (iterate only product-row; skip detail rows)
+                const data = [headers];
+                const rows = table.querySelectorAll('tbody tr.product-row');
 
-                                                    // Edit product from modal
-                                                    function editProductFromModal() {
-                                                        if (currentProductId) {
-                                                            editProduct(currentProductId);
-                                                        }
-                                                    }
+                rows.forEach(row => {
+                    // skip hidden rows
+                    if (row.style.display === 'none') return;
+                    const tds = Array.from(row.querySelectorAll('td'));
+                    if (tds.length === 0) return;
 
-                                                    // Delete product
-                                                    function deleteProduct(productId) {
-                                                        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
-                                                            window.location.href = '${pageContext.request.contextPath}/product?action=delete&id=' + productId;
-                                                        }
-                                                    }
+                    const rowData = tds
+                        .map((td, idx) => {
+                            if (idx === skipColIndex) return null; // placeholder for filtered column
+                            let txt = td.textContent.trim();
 
-                                                    // Delete product from modal
-                                                    function deleteProductFromModal() {
-                                                        if (currentProductId) {
-                                                            deleteProduct(currentProductId);
-                                                        }
-                                                    }
+                            // get corresponding header to parse numbers
+                            const header = theadThs[idx] ? theadThs[idx].textContent.trim().toUpperCase() : '';
 
-                                                    // Search on enter
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const searchInput = document.querySelector('.search-input');
-                                                        if (searchInput) {
-                                                            searchInput.addEventListener('keypress', function (e) {
-                                                                if (e.key === 'Enter') {
-                                                                    this.form.submit();
-                                                                }
-                                                            });
-                                                        }
-                                                    });
+                            // Price column: try to parse numeric
+                            if (header.includes('GIÁ') || header.includes('PRICE')) {
+                                let cleaned = txt.replace(/[^0-9,.\-]/g, '');
+                                if (cleaned.indexOf('.') > -1 && cleaned.indexOf(',') > -1) {
+                                    cleaned = cleaned.replace(/\./g, '');
+                                    cleaned = cleaned.replace(/,/g, '.');
+                                } else {
+                                    cleaned = cleaned.replace(/\./g, '');
+                                    cleaned = cleaned.replace(/,/g, '.');
+                                }
+                                const num = parseFloat(cleaned);
+                                return (!isNaN(num)) ? num : txt;
+                            }
+
+                            // Stock column: try parse integer
+                            if (header.includes('TỒN') || header.includes('STOCK') || header.includes('SỐ LƯỢNG')) {
+                                const n = parseInt(txt.replace(/[^0-9\-]/g, ''), 10);
+                                return !isNaN(n) ? n : txt;
+                            }
+
+                            return txt;
+                        })
+                        .filter((v) => v !== null); // drop skipped columns
+
+                    if (rowData.length) data.push(rowData);
+                });
+
+                // Add a summary row
+                const visibleCount = Array.from(rows).filter(r => r.style.display !== 'none').length;
+                data.push([]);
+                data.push(['Tổng sản phẩm:', visibleCount]);
+
+                // Create worksheet and workbook
+                const ws = XLSX.utils.aoa_to_sheet(data);
+
+                // Set column widths (optional)
+                ws['!cols'] = headers.map(h => ({ wch: Math.max(12, Math.min(30, h.length + 6)) }));
+
+                // Coerce numeric-formatted strings to numbers (defensive)
+                if (ws['!ref']) {
+                    const range = XLSX.utils.decode_range(ws['!ref']);
+                    for (let C = 0; C <= range.e.c; ++C) {
+                        const header = headers[C] ? headers[C].toUpperCase() : '';
+                        if (header.includes('GIÁ') || header.includes('PRICE') || header.includes('TỒN') || header.includes('STOCK')) {
+                            for (let R = range.s.r + 1; R <= range.e.r - 2; ++R) { // skip summary
+                                const cellRef = XLSX.utils.encode_cell({ c: C, r: R });
+                                const cell = ws[cellRef];
+                                if (cell && typeof cell.v === 'string') {
+                                    const cleaned = cell.v.toString().replace(/[^0-9\.-]/g, '');
+                                    const num = parseFloat(cleaned);
+                                    if (!isNaN(num)) {
+                                        cell.t = 'n';
+                                        cell.v = num;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Sản phẩm');
+
+                // Build filename with date and filters
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0].replace(/-/g, '');
+                let filename = 'Products_' + dateStr;
+
+                try {
+                    const url = new URL(window.location.href);
+                    const params = url.searchParams;
+                    const parts = [];
+                    if (params.get('keyword')) parts.push('kw-' + params.get('keyword').replace(/\s+/g, '_'));
+                    if (params.get('stock')) parts.push('stock-' + params.get('stock'));
+                    if (params.get('status')) parts.push('status-' + params.get('status'));
+                    const cats = params.getAll('categoryName');
+                    if (cats && cats.length) parts.push('cat-' + cats.join('-').replace(/\s+/g, '_'));
+                    if (parts.length) filename += '_' + parts.join('_');
+                } catch (e) {
+                    // ignore
+                }
+
+                XLSX.writeFile(wb, filename + '.xlsx');
+            }
+
+            // Wire export button and search enter
+            document.addEventListener('DOMContentLoaded', function () {
+                const btn = document.getElementById('btnExport');
+                if (btn) btn.addEventListener('click', exportProductsToExcel);
+
+                const searchInput = document.querySelector('.search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') this.form.submit();
+                    });
+                }
+            });
+
+            // other helper functions used earlier (keep them)
+            function createProductDetailHTML(productId) {
+                // optional demo function — not used by export; keep if needed
+                return '';
+            }
+
+            function editProduct(productId) {
+                window.location.href = '${pageContext.request.contextPath}/product?action=edit&id=' + productId;
+            }
+
+            function editProductFromModal() { if (currentProductId) editProduct(currentProductId); }
+            function deleteProduct(productId) {
+                if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+                    window.location.href = '${pageContext.request.contextPath}/product?action=delete&id=' + productId;
+                }
+            }
+            function deleteProductFromModal() { if (currentProductId) deleteProduct(currentProductId); }
+
         </script>
 
     </body>
 </html>
-    
