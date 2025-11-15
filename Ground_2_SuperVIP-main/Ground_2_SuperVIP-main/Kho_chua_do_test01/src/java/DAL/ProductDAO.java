@@ -728,5 +728,143 @@ private Integer getOrCreateInventoryIdForBranch(int branchId) throws SQLExceptio
         }
         return total;
     }
+    
+    
+    /* ===================== QTY THEO WarehouseProducts (đúng schema) ===================== */
+
+// Overload gộp tất cả kho
+public List<Product> getAllProductsWithWarehouseQty() {
+    return getAllProductsWithWarehouseQty(null);
+}
+
+public List<Product> searchProductsByNameWithWarehouseQty(String keyword) {
+    return searchProductsByNameWithWarehouseQty(keyword, null);
+}
+
+/**
+ * Lấy tất cả sản phẩm + TotalQty từ WarehouseProducts.
+ * @param warehouseId null = cộng gộp tất cả kho; != null = chỉ kho đó
+ */
+public List<Product> getAllProductsWithWarehouseQty(Integer warehouseId) {
+    final String sqlAll = """
+        WITH wqty AS (
+            SELECT pd.ProductID, SUM(ISNULL(wp.Quantity,0)) AS TotalQty
+            FROM ProductDetails pd
+            LEFT JOIN WarehouseProducts wp ON wp.ProductDetailID = pd.ProductDetailID
+            GROUP BY pd.ProductID
+        )
+        SELECT
+            p.ProductID, p.ProductName,
+            p.BrandID, p.CategoryID, p.SupplierID,
+            p.CostPrice, p.RetailPrice, p.ImageURL, p.VAT, p.CreatedAt, p.IsActive,
+            c.CategoryName, b.BrandName, s.SupplierName,
+            ISNULL(wq.TotalQty, 0) AS TotalQty
+        FROM Products p
+        LEFT JOIN wqty wq      ON wq.ProductID = p.ProductID
+        LEFT JOIN Brands b     ON b.BrandID    = p.BrandID
+        LEFT JOIN Categories c ON c.CategoryID = p.CategoryID
+        LEFT JOIN Suppliers s  ON s.SupplierID = p.SupplierID
+        ORDER BY p.ProductID DESC
+    """;
+
+    final String sqlOne = """
+        WITH wqty AS (
+            SELECT pd.ProductID, SUM(ISNULL(wp.Quantity,0)) AS TotalQty
+            FROM ProductDetails pd
+            JOIN WarehouseProducts wp ON wp.ProductDetailID = pd.ProductDetailID
+            WHERE wp.WarehouseID = ?
+            GROUP BY pd.ProductID
+        )
+        SELECT
+            p.ProductID, p.ProductName,
+            p.BrandID, p.CategoryID, p.SupplierID,
+            p.CostPrice, p.RetailPrice, p.ImageURL, p.VAT, p.CreatedAt, p.IsActive,
+            c.CategoryName, b.BrandName, s.SupplierName,
+            ISNULL(wq.TotalQty, 0) AS TotalQty
+        FROM Products p
+        LEFT JOIN wqty wq      ON wq.ProductID = p.ProductID
+        LEFT JOIN Brands b     ON b.BrandID    = p.BrandID
+        LEFT JOIN Categories c ON c.CategoryID = p.CategoryID
+        LEFT JOIN Suppliers s  ON s.SupplierID = p.SupplierID
+        ORDER BY p.ProductID DESC
+    """;
+
+    List<Product> list = new ArrayList<>();
+    try (PreparedStatement ps = connection.prepareStatement(warehouseId == null ? sqlAll : sqlOne)) {
+        if (warehouseId != null) ps.setInt(1, warehouseId);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(mapRowToProduct(rs));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // nếu cần: log.error(...)
+    }
+    return list;
+}
+
+/**
+ * Tìm theo tên sản phẩm + TotalQty từ WarehouseProducts
+ * @param warehouseId null = cộng gộp tất cả kho; != null = chỉ kho đó
+ */
+public List<Product> searchProductsByNameWithWarehouseQty(String keyword, Integer warehouseId) {
+    final String sqlAll = """
+        WITH wqty AS (
+            SELECT pd.ProductID, SUM(ISNULL(wp.Quantity,0)) AS TotalQty
+            FROM ProductDetails pd
+            LEFT JOIN WarehouseProducts wp ON wp.ProductDetailID = pd.ProductDetailID
+            GROUP BY pd.ProductID
+        )
+        SELECT
+            p.ProductID, p.ProductName,
+            p.BrandID, p.CategoryID, p.SupplierID,
+            p.CostPrice, p.RetailPrice, p.ImageURL, p.VAT, p.CreatedAt, p.IsActive,
+            c.CategoryName, b.BrandName, s.SupplierName,
+            ISNULL(wq.TotalQty, 0) AS TotalQty
+        FROM Products p
+        LEFT JOIN wqty wq      ON wq.ProductID = p.ProductID
+        LEFT JOIN Brands b     ON b.BrandID    = p.BrandID
+        LEFT JOIN Categories c ON c.CategoryID = p.CategoryID
+        LEFT JOIN Suppliers s  ON s.SupplierID = p.SupplierID
+        WHERE p.ProductName LIKE ? ESCAPE '\\'
+        ORDER BY p.ProductID DESC
+    """;
+
+    final String sqlOne = """
+        WITH wqty AS (
+            SELECT pd.ProductID, SUM(ISNULL(wp.Quantity,0)) AS TotalQty
+            FROM ProductDetails pd
+            JOIN WarehouseProducts wp ON wp.ProductDetailID = pd.ProductDetailID
+            WHERE wp.WarehouseID = ?
+            GROUP BY pd.ProductID
+        )
+        SELECT
+            p.ProductID, p.ProductName,
+            p.BrandID, p.CategoryID, p.SupplierID,
+            p.CostPrice, p.RetailPrice, p.ImageURL, p.VAT, p.CreatedAt, p.IsActive,
+            c.CategoryName, b.BrandName, s.SupplierName,
+            ISNULL(wq.TotalQty, 0) AS TotalQty
+        FROM Products p
+        LEFT JOIN wqty wq      ON wq.ProductID = p.ProductID
+        LEFT JOIN Brands b     ON b.BrandID    = p.BrandID
+        LEFT JOIN Categories c ON c.CategoryID = p.CategoryID
+        LEFT JOIN Suppliers s  ON s.SupplierID = p.SupplierID
+        WHERE p.ProductName LIKE ? ESCAPE '\\'
+        ORDER BY p.ProductID DESC
+    """;
+
+    List<Product> list = new ArrayList<>();
+    try (PreparedStatement ps = connection.prepareStatement(warehouseId == null ? sqlAll : sqlOne)) {
+        int idx = 1;
+        if (warehouseId != null) ps.setInt(idx++, warehouseId);
+        ps.setString(idx, "%" + escapeLike(keyword == null ? "" : keyword.trim()) + "%");
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(mapRowToProduct(rs));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+    
 
 }

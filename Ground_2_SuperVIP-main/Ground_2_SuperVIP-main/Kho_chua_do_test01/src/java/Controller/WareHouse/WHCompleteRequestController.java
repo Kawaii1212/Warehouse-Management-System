@@ -1,107 +1,129 @@
 package Controller.WareHouse;
 
-import DAL.StockMovementDetailDAO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
 import DAL.StockMovementsRequestDAO;
 import DAL.StockMovementResponseDAO;
+import DAL.StockMovementDAO;
+import DAL.ProductDetailSerialDAO;
 import Model.StockMovementResponse;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.util.Date;
-import java.sql.*;
-
-/**
- * Xử lý khi quản lý kho xác nhận hoàn tất phiếu nhập hàng URL:
- * /wh-complete-request?id=...
- */
-@WebServlet(name = "WHCompleteRequestController", urlPatterns = {"/wh-complete-request"})
+@WebServlet(name = "WHCompleteRequestController", urlPatterns = {"/WHCompleteRequest"})
 public class WHCompleteRequestController extends HttpServlet {
 
-    private final StockMovementsRequestDAO requestDAO = new StockMovementsRequestDAO();
-    private final StockMovementResponseDAO responseDAO = new StockMovementResponseDAO();
-
-    @Override   
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        try {
-            String idParam = request.getParameter("id");
-            if (idParam == null || idParam.isBlank()) {
-                response.sendRedirect("wh-import");
-                return;
-            }
-            int movementId = Integer.parseInt(idParam);
+        request.setCharacterEncoding("UTF-8");
+        String ctx = request.getContextPath();
 
-            HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("userID") == null) {
-                response.sendRedirect("login"); return;
-            }
-            int userId = (int) session.getAttribute("userID");
+        // --- Input ---
+        int movementId = parseIntOrDefault(request.getParameter("movementId"), -1);
+        String action  = nv(request.getParameter("action"), "complete"); // approve | reject | complete
+        String note    = nv(request.getParameter("note"), "");
 
-            // Chưa quét đủ thì chặn
-            StockMovementDetailDAO detailDAO = new StockMovementDetailDAO();
-            if (!detailDAO.isAllDetailsCompleted(movementId)) {
-                request.getSession().setAttribute("errorMessage",
-                        "Chưa đủ serial cho tất cả sản phẩm.");
-                response.sendRedirect("wh-import-export-detail?id=" + movementId);
-                return;
-            }
-
-            // Đã completed rồi thì thôi
-            if (responseDAO.hasCompletedStatus(movementId)) {
-                request.getSession().setAttribute("successMessage",
-                        "Đơn nhập #" + movementId + " đã hoàn thành trước đó.");
-                response.sendRedirect("wh-import-export-detail?id=" + movementId);
-                return;
-            }
-
-            // Ghi 1 bản ghi completed vào responses
-            StockMovementResponse smr = new StockMovementResponse();
-            smr.setMovementId(movementId);
-            smr.setResponsedBy(userId);
-            smr.setResponseAt(new Date());
-            smr.setResponseStatus("completed");
-            smr.setNote("Kho xác nhận hoàn tất nhập.");
-            boolean ok = new StockMovementResponseDAO().insertStockMovementResponse(smr);
-
-            if (ok) {
-                // Gán WarehouseID cho tất cả serial thuộc phiếu => về kho đích
-                Integer toWarehouseId = requestDAO.getToWarehouseIdByMovementId(movementId);
-                
-                if (toWarehouseId != null) {
-                    final String sql =
-                        "UPDATE s " +
-                        "SET s.WarehouseID = ?, " +
-                        "    s.BranchID    = NULL, " +
-                        "    s.OrderID     = NULL, " +
-                        "    s.Status      = 1 " +
-                        "FROM ProductDetailSerialNumber s " +
-                        "JOIN StockMovementDetail d ON s.MovementDetailID = d.MovementDetailID " +
-                        "WHERE d.MovementID = ?";
-                    try (PreparedStatement ps = new DAL.DataBaseContext().connection.prepareStatement(sql)) {
-                        ps.setInt(1, toWarehouseId);
-                        ps.setInt(2, movementId);
-                        ps.executeUpdate();
-                    }
-                }
-                request.getSession().setAttribute("successMessage", "✅ Đơn nhập hàng #" + movementId + " đã hoàn tất!");
-            } else {
-                request.getSession().setAttribute("errorMessage", "Không thể lưu phản hồi hoàn tất đơn hàng.");
-            }
-
-            response.sendRedirect("wh-import-export-detail?id=" + movementId);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            request.getSession().setAttribute("errorMessage", "Lỗi khi hoàn tất: " + ex.getMessage());
-            response.sendRedirect("wh-import");
+        if (movementId <= 0) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "movementId không hợp lệ");
+            return;
         }
+
+        // --- DAO ---
+        StockMovementsRequestDAO reqDAO = new StockMovementsRequestDAO();
+
+        // Lấy kho đích: ưu tiên param, thiếu thì lấy từ DB
+        Integer toWarehouseId = parseNullableInt(request.getParameter("toWarehouseId"));
+        if (toWarehouseId == null) {
+            toWarehouseId = reqDAO.findToWarehouseId(movementId); // helper ở dưới
+        }
+
+        // Lấy userId từ session; nếu null thì fallback CreatedBy của phiếu
+        Integer userId = getUserIdFromSession(request);
+        if (userId == null) {
+            Integer createdBy = reqDAO.findCreatedBy(movementId); // helper ở dưới
+            userId = createdBy; // ResponsedBy là NOT NULL -> buộc phải có
+        }
+
+        // --- Reject ---
+        if ("reject".equalsIgnoreCase(action)) {
+            StockMovementResponseDAO respDAO = new StockMovementResponseDAO();
+
+            StockMovementResponse r = new StockMovementResponse();
+            r.setMovementId(movementId);
+            r.setResponsedBy(userId);
+            r.setResponseAt(new java.util.Date());
+            r.setResponseStatus("REJECTED"); // hoặc "REJECT"
+            r.setNote(note);
+
+            respDAO.insertStockMovementResponse(r);
+
+            response.sendRedirect(ctx + "/WHImportRequest?msg=rejected");
+            return;
+        }
+
+        // --- Approve/Complete: phải có kho đích ---
+        if (toWarehouseId == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không xác định được kho đích (ToWarehouseID)");
+            return;
+        }
+
+        // 1) Cộng tồn vào WarehouseProducts theo chi tiết phiếu
+        StockMovementDAO smDAO = new StockMovementDAO();
+        boolean applied = smDAO.applyInboundToWarehouse(movementId, toWarehouseId);
+        if (!applied) {
+            request.setAttribute("error", "Không thể cập nhật tồn kho (WarehouseProducts).");
+            request.getRequestDispatcher("/WEB-INF/jsp/warehouse/import-error.jsp").forward(request, response);
+            return;
+        }
+
+        // 2) (Tuỳ chọn) Cập nhật serial thuộc phiếu về kho đích
+        try {
+            ProductDetailSerialDAO serialDAO = new ProductDetailSerialDAO();
+            serialDAO.moveSerialsToWarehouseByMovement(movementId, toWarehouseId);
+        } catch (Throwable ignore) { /* nếu chưa dùng serial có thể bỏ qua */ }
+
+        // 3) Ghi phản hồi COMPLETED/APPROVED
+        StockMovementResponseDAO respDAO = new StockMovementResponseDAO();
+
+        StockMovementResponse r = new StockMovementResponse();
+        r.setMovementId(movementId);
+        r.setResponsedBy(userId);
+        r.setResponseAt(new java.util.Date());
+        r.setResponseStatus("COMPLETED"); // hoặc "APPROVED" theo quy ước của bạn
+        r.setNote(note);
+
+        respDAO.insertStockMovementResponse(r);
+
+        // 4) Điều hướng: quay về danh sách hàng hoá để thấy tồn tăng
+        response.sendRedirect(ctx + "/WareHouseProduct?msg=import_completed");
     }
 
-    @Override
-    public String getServletInfo() {
-        return "Xác nhận hoàn tất đơn nhập hàng tại kho";
+    /* ================== helpers ================== */
+
+    private static int parseIntOrDefault(String s, int d) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return d; }
+    }
+
+    private static Integer parseNullableInt(String s) {
+        try { return (s == null || s.isBlank()) ? null : Integer.valueOf(s.trim()); }
+        catch (Exception e) { return null; }
+    }
+
+    private static String nv(String s, String d) {
+        return (s == null) ? d : s;
+    }
+
+    private static Integer getUserIdFromSession(jakarta.servlet.http.HttpServletRequest request) {
+        Object o1 = request.getSession().getAttribute("userId");
+        if (o1 instanceof Integer) return (Integer) o1;
+        Object o2 = request.getSession().getAttribute("UserID");
+        if (o2 instanceof Integer) return (Integer) o2;
+        return null;
     }
 }

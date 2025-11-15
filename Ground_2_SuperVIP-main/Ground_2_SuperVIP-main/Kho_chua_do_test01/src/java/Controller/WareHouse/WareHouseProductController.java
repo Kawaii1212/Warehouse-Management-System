@@ -57,14 +57,27 @@ public class WareHouseProductController extends HttpServlet {
         CategoryDAO categoryDAO = new CategoryDAO();
         BrandDAO brandDAO = new BrandDAO();
 
-        // ===== Lấy & lọc sản phẩm (GIỮ NGUYÊN CODE CŨ) =====
-        List<Product> products;
+// ===== Lấy & lọc sản phẩm (đọc tồn từ WarehouseProducts) =====
+List<Product> products;
 
-        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-            products = productDAO.searchProductsByNameWithQty(searchKeyword.trim());
-        } else {
-            products = productDAO.getAllProductsWithQty();
-        }
+boolean hasKeyword = (searchKeyword != null && !searchKeyword.trim().isEmpty());
+
+// Lấy warehouseId nếu bạn muốn lọc theo 1 kho cụ thể (param → session → null)
+Integer warehouseId = null;
+String wid = request.getParameter("warehouseId");
+if (wid != null && !wid.isBlank()) {
+    try { warehouseId = Integer.valueOf(wid.trim()); } catch (NumberFormatException ignore) {}
+}
+if (warehouseId == null) {
+    Object whObj = request.getSession().getAttribute("warehouseId");
+    if (whObj instanceof Integer) warehouseId = (Integer) whObj;
+}
+
+// Gọi DAO mới
+products = hasKeyword
+        ? productDAO.searchProductsByNameWithWarehouseQty(searchKeyword.trim(), warehouseId)
+        : productDAO.getAllProductsWithWarehouseQty(warehouseId);
+ 
 
         // Lọc theo danh mục (nếu có)
         if (categories != null && categories.length > 0) {

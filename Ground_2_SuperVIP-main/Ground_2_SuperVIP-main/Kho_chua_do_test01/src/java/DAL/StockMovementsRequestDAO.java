@@ -899,4 +899,84 @@ public class StockMovementsRequestDAO extends DataBaseContext {
         return null;
     }
 
+    public Integer findToWarehouseId(int movementId) {
+    String sql = "SELECT ToWarehouseID FROM StockMovementsRequest WHERE MovementID = ?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, movementId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int v = rs.getInt(1);
+                return rs.wasNull() ? null : v;
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+    // StockMovementsRequestDAO.java
+public void applyImportToWarehouseProducts(int movementId, int toWarehouseId) throws SQLException {
+    String sel = """
+        SELECT ProductDetailID, SUM(Quantity) AS Qty
+        FROM StockMovementDetail
+        WHERE MovementID = ?
+        GROUP BY ProductDetailID
+    """;
+    String upd = "UPDATE WarehouseProducts SET Quantity = Quantity + ? WHERE WarehouseID = ? AND ProductDetailID = ?";
+    String ins = "INSERT INTO WarehouseProducts (WarehouseID, ProductDetailID, Quantity) VALUES (?,?,?)";
+
+    boolean auto = connection.getAutoCommit();
+    try {
+        connection.setAutoCommit(false);
+        try (PreparedStatement ps = connection.prepareStatement(sel)) {
+            ps.setInt(1, movementId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int pdId = rs.getInt("ProductDetailID");
+                    int qty  = rs.getInt("Qty");
+
+                    int updated;
+                    try (PreparedStatement u = connection.prepareStatement(upd)) {
+                        u.setInt(1, qty);
+                        u.setInt(2, toWarehouseId);
+                        u.setInt(3, pdId);
+                        updated = u.executeUpdate();
+                    }
+                    if (updated == 0) {
+                        try (PreparedStatement i = connection.prepareStatement(ins)) {
+                            i.setInt(1, toWarehouseId);
+                            i.setInt(2, pdId);
+                            i.setInt(3, qty);
+                            i.executeUpdate();
+                        }
+                    }
+                }
+            }
+        }
+        connection.commit();
+    } catch (SQLException e) {
+        connection.rollback();
+        throw e;
+    } finally {
+        connection.setAutoCommit(auto);
+    }
+}
+
+// Lấy CreatedBy của phiếu (fallback cho ResponsedBy)
+public Integer findCreatedBy(int movementId) {
+    String sql = "SELECT CreatedBy FROM StockMovementsRequest WHERE MovementID = ?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, movementId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int v = rs.getInt(1);
+                return rs.wasNull() ? null : v;
+            }
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return null;
+}
+    
+    
 }

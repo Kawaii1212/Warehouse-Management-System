@@ -87,8 +87,8 @@
                         <% Boolean canComplete = (Boolean) request.getAttribute("canComplete"); %>
                         <% if (!"completed".equals(movementStatus) && !"Hoàn thành".equalsIgnoreCase(movement != null ? movement.getResponseStatus() : "")) { %>
                         <% if (Boolean.TRUE.equals(canComplete)) { %>
-                        <form action="<%=ctx%>/wh-complete-request" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<%= request.getParameter("id") %>"/>
+                        <form action="<%=ctx%>/WHCompleteRequest" method="post" style="display:inline;">
+                            <input type="hidden" name="movementId" value="<%= request.getParameter("id") %>"/>
                             <input type="hidden" name="movementType" value="<%= movementType %>"/>
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-check-circle"></i> Hoàn tất <%= isExport ? "xuất" : "nhập" %> hàng
