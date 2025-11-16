@@ -50,7 +50,9 @@ public class WareHouseProductController extends HttpServlet {
 
         // Page param (mặc định 1)
         int currentPage = parseIntOrDefault(request.getParameter("page"), 1);
-        if (currentPage < 1) currentPage = 1;
+        if (currentPage < 1) {
+            currentPage = 1;
+        }
 
         // ===== DAO =====
         ProductDAO productDAO = new ProductDAO();
@@ -58,31 +60,39 @@ public class WareHouseProductController extends HttpServlet {
         BrandDAO brandDAO = new BrandDAO();
 
 // ===== Lấy & lọc sản phẩm (đọc tồn từ WarehouseProducts) =====
-List<Product> products;
+        List<Product> products;
 
-boolean hasKeyword = (searchKeyword != null && !searchKeyword.trim().isEmpty());
+        boolean hasKeyword = (searchKeyword != null && !searchKeyword.trim().isEmpty());
 
 // Lấy warehouseId nếu bạn muốn lọc theo 1 kho cụ thể (param → session → null)
-Integer warehouseId = null;
-String wid = request.getParameter("warehouseId");
-if (wid != null && !wid.isBlank()) {
-    try { warehouseId = Integer.valueOf(wid.trim()); } catch (NumberFormatException ignore) {}
-}
-if (warehouseId == null) {
-    Object whObj = request.getSession().getAttribute("warehouseId");
-    if (whObj instanceof Integer) warehouseId = (Integer) whObj;
-}
+        Integer warehouseId = null;
+        String wid = request.getParameter("warehouseId");
+        if (wid != null && !wid.isBlank()) {
+            try {
+                warehouseId = Integer.valueOf(wid.trim());
+            } catch (NumberFormatException ignore) {
+            }
+        }
+        if (warehouseId == null) {
+            Object whObj = request.getSession().getAttribute("warehouseId");
+            if (whObj instanceof Integer) {
+                warehouseId = (Integer) whObj;
+            }
+        }
 
 // Gọi DAO mới
-products = hasKeyword
-        ? productDAO.searchProductsByNameWithWarehouseQty(searchKeyword.trim(), warehouseId)
-        : productDAO.getAllProductsWithWarehouseQty(warehouseId);
- 
+        products = hasKeyword
+                ? productDAO.searchProductsByNameWithWarehouseQty(searchKeyword.trim(), warehouseId)
+                : productDAO.getAllProductsWithWarehouseQty(warehouseId);
 
         // Lọc theo danh mục (nếu có)
         if (categories != null && categories.length > 0) {
             java.util.Set<String> selected = new java.util.HashSet<>();
-            for (String c : categories) if (c != null && !c.trim().isEmpty()) selected.add(c.trim());
+            for (String c : categories) {
+                if (c != null && !c.trim().isEmpty()) {
+                    selected.add(c.trim());
+                }
+            }
             if (!selected.isEmpty()) {
                 products = products.stream()
                         .filter(p -> p.getCategoryId() != null && selected.contains(String.valueOf(p.getCategoryId())))
@@ -118,7 +128,8 @@ products = hasKeyword
                 products = products.stream()
                         .filter(p -> p.getRetailPrice() != null && p.getRetailPrice().doubleValue() >= fromPrice)
                         .collect(java.util.stream.Collectors.toList());
-            } catch (NumberFormatException ignore) { }
+            } catch (NumberFormatException ignore) {
+            }
         }
         if (priceTo != null && !priceTo.trim().isEmpty()) {
             try {
@@ -126,21 +137,24 @@ products = hasKeyword
                 products = products.stream()
                         .filter(p -> p.getRetailPrice() != null && p.getRetailPrice().doubleValue() <= toPrice)
                         .collect(java.util.stream.Collectors.toList());
-            } catch (NumberFormatException ignore) { }
+            } catch (NumberFormatException ignore) {
+            }
         }
 
         // =====================================================================================
         // ===== [NEW] Phân trang SAU LỌC (page size cố định) =====
         int totalItems = products.size();
         int totalPages = (totalItems == 0) ? 1 : (int) Math.ceil((double) totalItems / PAGE_SIZE);
-        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
 
         int fromIdx = Math.max(0, (currentPage - 1) * PAGE_SIZE);
         int toIdx = Math.min(fromIdx + PAGE_SIZE, totalItems);
         List<Product> pageItems = (fromIdx >= toIdx) ? java.util.Collections.emptyList() : products.subList(fromIdx, toIdx);
 
         int startItem = (totalItems == 0) ? 0 : (fromIdx + 1);
-        int endItem   = (totalItems == 0) ? 0 : toIdx;
+        int endItem = (totalItems == 0) ? 0 : toIdx;
 
         // Xây base query giữ nguyên filter (không gồm page)
         String baseQuery = buildBaseQuery(searchKeyword, categories, stockFilter, statusFilter, priceFrom, priceTo);
@@ -148,7 +162,6 @@ products = hasKeyword
 
         // ===== [OLD] Set nguyên list (đã thay bằng pageItems) =====
         // request.setAttribute("products", products);
-
         // ===== Set attributes cho JSP =====
         request.setAttribute("products", pageItems);
         request.setAttribute("categories", categoryDAO.getAll());
@@ -173,17 +186,24 @@ products = hasKeyword
     }
 
     private static int parseIntOrDefault(String s, int d) {
-        try { return Integer.parseInt(s); } catch (Exception e) { return d; }
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return d;
+        }
     }
 
     private static String enc(String v) {
         return URLEncoder.encode(v == null ? "" : v, StandardCharsets.UTF_8);
     }
 
-    /** Tạo query string giữ nguyên các filter, KHÔNG gồm page (để JSP append page). */
+    /**
+     * Tạo query string giữ nguyên các filter, KHÔNG gồm page (để JSP append
+     * page).
+     */
     private static String buildBaseQuery(String search, String[] categories,
-                                         String stock, String status,
-                                         String priceFrom, String priceTo) {
+            String stock, String status,
+            String priceFrom, String priceTo) {
         StringBuilder sb = new StringBuilder();
 
         if (search != null && !search.trim().isEmpty()) {

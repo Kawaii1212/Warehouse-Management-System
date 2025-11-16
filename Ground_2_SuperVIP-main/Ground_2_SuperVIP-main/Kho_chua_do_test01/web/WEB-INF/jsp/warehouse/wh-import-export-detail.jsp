@@ -296,16 +296,16 @@
                         <input type="hidden" name="movementType" value="<%= movementType %>"/>
                         <input type="hidden" name="movementDetailId" id="modalMovementDetailId"/>
                         <input type="hidden" name="productDetailId" id="modalProductDetailId"/>
-                        
+
                         <div class="form-group">
                             <label for="serialNumber">Serial Number:</label>
                             <input type="text" name="serialNumber" id="serialNumber" 
                                    placeholder="Nhập serial hoặc quét QR..." 
                                    class="form-input" required autofocus/>
                         </div>
-                        
+
                         <div class="modal-actions">
-                           
+
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-plus"></i> + Thêm Serial
                             </button>
@@ -348,7 +348,7 @@
             }
 
             // Close modal when clicking outside
-            window.onclick = function(event) {
+            window.onclick = function (event) {
                 const modal = document.getElementById('scanModal');
                 if (event.target == modal) {
                     closeScanModal();
@@ -358,8 +358,8 @@
 
         <!-- CSS tinh gọn (giữ nguyên nếu bạn đã có file css) -->
         <style>
-            
-            
+
+
             .movement-info-card {
                 background:#f8f9fa;
                 border:1px solid #dee2e6;
